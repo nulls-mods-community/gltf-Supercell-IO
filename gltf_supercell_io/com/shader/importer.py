@@ -1,38 +1,31 @@
 from __future__ import annotations
+
+from os.path import exists, join
+from pathlib import Path
+from typing import (TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Type,
+                    cast)
+
 import bpy
 import numpy as np
-from pathlib import Path
-from os.path import join, exists
-from bpy.types import (
-    Node,
-    NodeSocket,
-    ShaderNodeTexImage,
-    ShaderNodeOutputMaterial,
-    Image,
-    Material,
-    ShaderNodeTree,
-)
-from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
+from bpy.types import (Image, Material, Node, NodeSocket,
+                       ShaderNodeOutputMaterial, ShaderNodeTexImage,
+                       ShaderNodeTree)
 from io_scene_gltf2.io.com.gltf2_io import Image as glImage
-from typing import Callable, Optional, Tuple, Dict, Any, cast
-from ..materials import ScShaderMaterial, ScBlendMode
-from ..materials.variables import (
-    ShaderFloatVectorProperty,
-    ShaderFloatProperty,
-    ShaderTextureProperty,
-    ShaderBooleanProperty,
-    ShaderProperty,
-)
+from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
+
+from ...preferences import get_prefs
+from ..external.image_converter import load_image_converter
+from ..materials import ScBlendMode, ScShaderMaterial
+from ..materials.variables import (ShaderBooleanProperty, ShaderFloatProperty,
+                                   ShaderFloatVectorProperty, ShaderProperty,
+                                   ShaderTextureProperty)
+from ..net import texture_loader
 from ..utilities.shader import ShaderUtils
 from .loader import LibraryLoader
-from ...preferences import get_prefs
-from ..net import texture_loader
-from typing import TYPE_CHECKING, Type
-from ..external.image_converter import load_image_converter
 
 if TYPE_CHECKING:
-    from ..shader_presets import ShaderPresetDescriptor
     from ...importer.ui import glTFSupercellImporterProperties
+    from ..shader_presets import ShaderPresetDescriptor
 
 # An array of image extensions that can be loaded by blender
 NATIVE_IMAGE_EXTENSIONS = [
@@ -99,6 +92,8 @@ class ShaderImporter(ShaderUtils):
         modifier = self.setup_modifiers()
         self.shader = self.setup_shader()
         self.preset.import_shader(self)
+
+        assert self.output.inputs is not None
 
         if modifier is not None:
             first, last = modifier
@@ -180,7 +175,7 @@ class ShaderImporter(ShaderUtils):
 
         pixels = array.astype(np.float32) / 255.0
         img = bpy.data.images.new(name, width=width, height=height, alpha=True)
-        img.pixels.foreach_set(pixels.ravel())  # type: ignore
+        img.pixels.foreach_set(pixels.ravel())
         img.update()
         img.pack()
         return img
@@ -188,7 +183,7 @@ class ShaderImporter(ShaderUtils):
     def load_compressed_texture(self, path: Path):
         image_converter = load_image_converter()
         loader: Dict[str, Callable[..., tuple[bytes, int, int]]] = {
-            ".sctx": image_converter.decode_sctx  # type: ignore
+            ".sctx": image_converter.decode_sctx
         }
 
         try:
@@ -389,11 +384,9 @@ class ShaderImporter(ShaderUtils):
         if not prop.path:
             return
 
-        node = self.image_cache.get(prop.path)  # type: ignore
+        node = self.image_cache.get(prop.path)
         if node is None:
-            texture: ShaderNodeTexImage = self.tree.nodes.new(
-                "ShaderNodeTexImage"
-            )  # type: ignore
+            texture: ShaderNodeTexImage = self.tree.nodes.new("ShaderNodeTexImage")  # type: ignore
 
             if prop.path not in ["", "."]:
                 texture.image = self.load_texture_image(prop)

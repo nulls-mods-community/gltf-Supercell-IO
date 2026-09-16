@@ -1,0 +1,4 @@
+[submodule "extern/glTF-Blender-IO"]
+	path = extern/glTF-Blender-IO
+	url = https://github.com/KhronosGroup/glTF-Blender-IO.git
+	branch = blender-v5.2-release

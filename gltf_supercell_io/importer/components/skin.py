@@ -1,15 +1,17 @@
-import bpy
-from mathutils import Vector
 from typing import TYPE_CHECKING, Any
-from .component import glTF2BaseImporterComponent, requires_extension
-from io_scene_gltf2.io.imp.gltf2_io_binary import BinaryData
-from io_scene_gltf2.blender.imp.vnode import VNode
-from ...com.utilities.accessor import MemoryAccessor
+
+import bpy
 import numpy as np
+from io_scene_gltf2.blender.imp.vnode import VNode
+from io_scene_gltf2.io.imp.gltf2_io_binary import BinaryData
+from mathutils import Vector
+
+from ...com.utilities.accessor import MemoryAccessor
+from .component import glTF2BaseImporterComponent, requires_extension
 
 if TYPE_CHECKING:
+    from io_scene_gltf2.io.com.gltf2_io import Node, Scene, Skin
     from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
-    from io_scene_gltf2.io.com.gltf2_io import Skin, Node, Scene
 
 
 class SkinImporter(glTF2BaseImporterComponent):
@@ -24,23 +26,15 @@ class SkinImporter(glTF2BaseImporterComponent):
         # This is the reason to completely rebuild skin
         # Since this may cause problems like invalid vertex groups or bind pose miscalculation
         joints: list[int] = skin.joints or []
-        unique_joints = set()
-        duplicate_joints = set(
-            x for x in joints if x in unique_joints or unique_joints.add(x)
-        )
-
-        if len(duplicate_joints) != 0:
-            return False
-
-        return True
+        return len(joints) == len(set(joints))
 
     @requires_extension
     def gather_import_mesh_options(
         self,
-        mesh_options,
-        pymesh,
+        _mesh_options,
+        _pymesh,
         skin_idx,
-        gltf,
+        _gltf,
     ):
         # Need to save skin idx to properly fix skin in mesh after hook
         self.skin_idx = skin_idx
@@ -75,7 +69,7 @@ class SkinImporter(glTF2BaseImporterComponent):
             groups.remove(groups[index])
 
     @requires_extension
-    def gather_import_mesh_after_hook(self, gltf_mesh, blender_mesh, gltf):
+    def gather_import_mesh_after_hook(self, _gltf_mesh, blender_mesh, gltf):
         if self.skin_idx is None or self.skin_idx == -1:
             return
 
@@ -198,7 +192,7 @@ class SkinImporter(glTF2BaseImporterComponent):
                 armature: bpy.types.Armature = arma_object.data  # type: ignore
 
                 bone_name = vnode.blender_bone_name  # type: ignore
-                bone: bpy.types.Bone = armature.bones[bone_name]  # type: ignore
+                bone: bpy.types.Bone = armature.bones[bone_name]
                 bone.use_deform = (
                     vnode_id in deform_bones and vnode_id not in self.noop_joints
                 )
@@ -273,6 +267,6 @@ class SkinImporter(glTF2BaseImporterComponent):
                 visit(children, armature)
 
     @requires_extension
-    def gather_import_scene_after_nodes_hook(self, gltf_scene, blender_scene, gltf):
+    def gather_import_scene_after_nodes_hook(self, _gltf_scene, _blender_scene, gltf):
         self.filter_deform_bones(gltf)
         self.create_pose_bones_properties(gltf)

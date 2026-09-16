@@ -1,19 +1,22 @@
-import bpy
-from typing import TYPE_CHECKING, cast, Any, Protocol
-from ...com import glTF_extension_name, glTF_material_extension_name
 from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, Protocol, cast
+
+import bpy
+
+from ...com import glTF_extension_name, glTF_material_extension_name
 
 if TYPE_CHECKING:
-    from ..ui import glTFSupercellImporterProperties
     from io_scene_gltf2.blender.imp.vnode import VNode
+    from io_scene_gltf2.io.com.gltf2_io import Accessor, Material, Mesh, Node, Scene
     from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
-    from io_scene_gltf2.io.com.gltf2_io import Material, Node, Mesh, Scene, Accessor
     from io_scene_gltf2.io.imp.user_extensions import MutatingArgument
+
+    from ..ui import glTFSupercellImporterProperties
 
 
 class IMPORT_mesh_options(Protocol):
-    skinning = True
-    skin_into_bind_pose = True
+    skinning: bool = True
+    skin_into_bind_pose: bool = True
 
 
 def is_valid_scgltf(gltf: "glTFImporter"):

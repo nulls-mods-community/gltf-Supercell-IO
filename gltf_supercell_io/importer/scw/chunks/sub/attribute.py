@@ -20,9 +20,13 @@ class ScwAttribute(ScwChunk):
         scale = br.read_float()
         count = br.read_uint32()
 
-        self.data = np.frombuffer(
-            br.read_bytes(count * dimensions * 2),
-            dtype=dtype_from_size(2, unsigned=False),
-        ).reshape((count, dimensions)).astype(np.float32)
-        
+        self.data = (
+            np.frombuffer(
+                br.read_bytes(count * dimensions * 2),
+                dtype=dtype_from_size(2, unsigned=False),
+            )
+            .reshape((count, dimensions))
+            .astype(np.float32)
+        )
+
         self.data *= scale / 32512

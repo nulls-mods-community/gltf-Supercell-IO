@@ -19,5 +19,5 @@ __all__ = [
     "primitive_gather_attribute",
     "flat_glb_output",
     "primitive_master_hook",
-    "buffer_caching_patch"
+    "buffer_caching_patch",
 ]

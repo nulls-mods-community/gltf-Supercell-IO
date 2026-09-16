@@ -1,23 +1,25 @@
-import bpy
-from ...com.odin.attribute import OdinMeshDataInfo
-from io_scene_gltf2.io.exp.binary_data import BinaryData
-
-from typing import TYPE_CHECKING, cast, Any
 from abc import abstractmethod
 from dataclasses import dataclass, fields
+from typing import TYPE_CHECKING, Any, cast
+
+import bpy
 import numpy as np
+from io_scene_gltf2.io.exp.binary_data import BinaryData
+
+from ...com.odin.attribute import OdinMeshDataInfo
 
 if TYPE_CHECKING:
-    from ..ui import glTFSupercellExporterProperties
+    from io_scene_gltf2.blender.exp.tree import VExportTree
     from io_scene_gltf2.io.com.gltf2_io import (
+        Animation,
         Gltf,
         Material,
         Mesh,
-        Skin,
         Node,
-        Animation,
+        Skin,
     )
-    from io_scene_gltf2.blender.exp.tree import VExportTree
+
+    from ..ui import glTFSupercellExporterProperties
 
 
 def requires_extension(func):
@@ -63,10 +65,12 @@ class PrimitiveData:
 
 
 class glTF2BaseExporterComponent:
-    def __init__(self, **kwargs):
-        scene = cast(Any, bpy.context.scene)
+    def __init__(self, **_kwargs):
+        assert bpy.context.scene is not None
+        assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
         self.properties: glTFSupercellExporterProperties = (
-            scene.glTFSupercellExporterProperties
+            bpy.context.scene.glTFSupercellExporterProperties  # ty: ignore[invalid-assignment]
         )
 
         # Buffer view with shared mesh properties

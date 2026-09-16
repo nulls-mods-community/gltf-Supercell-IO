@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class OdinMeshImporter(glTF2BaseImporterComponent):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.cache: dict[int, dict] = {}
@@ -63,9 +62,7 @@ class OdinMeshImporter(glTF2BaseImporterComponent):
         attributes = {}
 
         mesh_info = mesh_infos[idx]
-        vertex_descriptors: List[dict] = mesh_info.get(
-            "vertexDescriptors"
-        )  # type: ignore
+        vertex_descriptors: List[dict] = mesh_info.get("vertexDescriptors")  # type: ignore
         for descriptors in vertex_descriptors:
             offset = descriptors.get("offset", 0)
             stride = descriptors.get("stride", 0)
@@ -141,7 +138,7 @@ class OdinMeshImporter(glTF2BaseImporterComponent):
             gltf.decode_accessor_cache[self.accessor_offset] = data
             gltf.accessor_cache[self.accessor_offset] = data
 
-            self.accessor_offset += 1  # type: ignore
+            self.accessor_offset += 1
 
     @requires_extension
     def gather_import_mesh_options(
@@ -151,7 +148,6 @@ class OdinMeshImporter(glTF2BaseImporterComponent):
         skin_idx,
         gltf,
     ):
-
         # Story:
         # Some of the bones has scale property in nodes (finger bones from grom_geo.glb Brawl Stars, for example)
         # Well, most likely optimizer skill issue

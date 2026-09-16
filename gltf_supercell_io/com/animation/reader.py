@@ -1,6 +1,7 @@
 from typing import List, Sequence
 from ..odin.animation_flags import OdinAnimationFlags
 
+
 class OdinAnimationReader:
     def __init__(self, animation: dict):
         self.frame_rate: float = animation.get("frameRate") or 30.0

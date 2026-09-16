@@ -1,6 +1,8 @@
+# ty: ignore[invalid-type-form]
 import bpy
+from bpy.props import BoolProperty, StringProperty
 from bpy.types import PropertyGroup
-from bpy.props import StringProperty, BoolProperty
+
 from ..com import glTF_extension_name
 
 
@@ -41,11 +43,17 @@ class glTFSupercellExporterProperties(PropertyGroup):
     )
 
 
-def draw_export(context: bpy.context, layout: bpy.types.UILayout):
+def draw_export(_context: bpy.context, layout: bpy.types.UILayout):
     if bpy.context.scene is None:
         return
 
-    props = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+    assert bpy.context.scene is not None
+    assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+    props: "glTFSupercellExporterProperties" = (
+        bpy.context.scene.glTFSupercellExporterProperties
+    )  # ty: ignore[invalid-assignment]
+
 
     header, body = layout.panel(glTF_extension_name, default_closed=False)
     header.use_property_split = False

@@ -266,7 +266,7 @@ class MeshExporter(glTF2BaseExporterComponent):
         vertex_attributes: dict[OdinAttributeType, OdinVertexAttribute] = {}
         for id_type, attribute in attributes.items():
             attribute_format = attribute.source_format
-            match (id_type):
+            match id_type:
                 case OdinAttributeType.a_boneweights:
                     # Normalize to UInt later
                     attribute_format = OdinAttributeFormat.UInt
@@ -394,7 +394,10 @@ class MeshExporter(glTF2BaseExporterComponent):
         )
 
         pool.root_extension = ChildOfRootExtension(
-            ["meshDataInfos"], glTF_extension_name, info, True  # type: ignore
+            ["meshDataInfos"],
+            glTF_extension_name,
+            info,
+            True,
         )
         self.pool.append(pool)
         return pool, chunks

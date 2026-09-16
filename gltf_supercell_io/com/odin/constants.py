@@ -2,6 +2,7 @@ from enum import IntEnum, StrEnum, auto
 import numpy as np
 from io_scene_gltf2.io.com.constants import ComponentType
 
+
 class OdinAttributeType(StrEnum):
     a_pos = auto()
     a_normal = auto()
@@ -295,14 +296,14 @@ class OdinAttributeFormat(IntEnum):
     @classmethod
     def from_components(cls, type: str, component_type: ComponentType):
         if type == "SCALAR":
-            match (component_type):
+            match component_type:
                 case ComponentType.UnsignedInt:
                     return OdinAttributeFormat.UInt
                 case ComponentType.Float:
                     return OdinAttributeFormat.Float
 
         if type == "VEC2":
-            match (component_type):
+            match component_type:
                 case ComponentType.Byte:
                     return OdinAttributeFormat.Byte2
                 case ComponentType.UnsignedByte:
@@ -319,7 +320,7 @@ class OdinAttributeFormat(IntEnum):
                     return OdinAttributeFormat.Float2
 
         if type == "VEC3":
-            match (component_type):
+            match component_type:
                 case ComponentType.Byte:
                     return OdinAttributeFormat.Byte3
                 case ComponentType.UnsignedByte:
@@ -336,7 +337,7 @@ class OdinAttributeFormat(IntEnum):
                     return OdinAttributeFormat.Float3
 
         if type == "VEC4":
-            match (component_type):
+            match component_type:
                 case ComponentType.Byte:
                     return OdinAttributeFormat.Byte4
                 case ComponentType.UnsignedByte:

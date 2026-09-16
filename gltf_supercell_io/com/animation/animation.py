@@ -8,8 +8,8 @@ from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
 class OdinAnimation:
     """
     Supercell odin animation reader
-    The implementation of this class completely diverges from the real one 
-    in favor of such a design in order to support all versions of 
+    The implementation of this class completely diverges from the real one
+    in favor of such a design in order to support all versions of
     odin animation that used by Supercell
     """
 

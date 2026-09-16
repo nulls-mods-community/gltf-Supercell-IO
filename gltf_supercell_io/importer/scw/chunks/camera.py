@@ -19,5 +19,7 @@ class ScwCamera(ScwChunk):
                 br.read_float(5)
             )
         else:
-            raise NotImplementedError("SCW v0 camera is not supported") # and probably doesnt exist
+            raise NotImplementedError(
+                "SCW v0 camera is not supported"
+            )  # and probably doesnt exist
             br.read_matrix()

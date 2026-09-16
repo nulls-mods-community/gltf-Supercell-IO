@@ -26,7 +26,6 @@ if TYPE_CHECKING:
 
 
 class CommonImporter(glTF2BaseImporterComponent):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.bone_nodes = set()
@@ -423,8 +422,8 @@ class CommonImporter(glTF2BaseImporterComponent):
             self.setup_settings(gltf)
 
         # Shared cache for all meshes import operations
-        gltf.supercell_vertex_cache = {}  # type: ignore
-        gltf.supercell_vertex_accessor_offset = 0  # type: ignore
+        gltf.supercell_vertex_cache = {}
+        gltf.supercell_vertex_accessor_offset = 0
 
     @requires_extension
     def gather_import_node_before_hook(self, vnode, node, gltf):
@@ -443,7 +442,7 @@ class CommonImporter(glTF2BaseImporterComponent):
     @requires_extension
     def gather_import_scene_after_nodes_hook(self, gltf_scene, blender_scene, gltf):
         if self.properties.adjust_colorspace:
-            blender_scene.view_settings.view_transform = "Raw"  # type: ignore
+            blender_scene.view_settings.view_transform = "Raw"
 
     def decode_accessor_before_hook(
         self,

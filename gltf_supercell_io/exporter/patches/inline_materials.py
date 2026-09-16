@@ -1,8 +1,9 @@
 from ...com.utilities.patcher import Patch
 
 
-def can_use_inline(self):
+def can_use_inline(_self) -> bool:
     return False
+
 
 # Well.... what i can say...
 # glTF IO in Blender 5.2 decided to use inlined materials for some reason, sounds like a good idea

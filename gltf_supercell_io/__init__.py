@@ -98,13 +98,13 @@ patches_5_2_up = [inline_materials]
 
 
 def register():
-    major, minor, build = bpy.app.version
+    major, minor, _build = bpy.app.version
     for cls in classes:
         bpy.utils.register_class(cls)
 
     for patch in patches:
         register_patch(patch)
-    gltf_scene.compute_vnodes = vnodes_compute_patch.function
+    gltf_scene.compute_vnodes = vnodes_compute_patch.function  # ty: ignore[invalid-assignment]
 
     if major >= 5 and minor >= 2:
         for patch in patches_5_2_up:
@@ -133,7 +133,7 @@ def register():
         persistent=True,
     )
 
-    bpy.types.TOPBAR_MT_file_import.append(scw_func_import)
+    bpy.types.TOPBAR_MT_file_import.append(scw_func_import)  # ty: ignore[invalid-argument-type]
 
     # Use the following 2 lines to register the UI for this hook
     from io_scene_gltf2 import exporter_extension_layout_draw
@@ -167,4 +167,4 @@ def unregister():
     bpy.app.handlers.load_post.remove(refresh_handler)
     bpy.app.timers.unregister(asset_browser_timer)
 
-    bpy.types.TOPBAR_MT_file_import.remove(scw_func_import)
+    bpy.types.TOPBAR_MT_file_import.remove(scw_func_import)  # ty: ignore[invalid-argument-type]

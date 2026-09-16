@@ -1,4 +1,5 @@
 import bpy
+
 from .node import ShaderNodeScNode
 
 
@@ -7,7 +8,7 @@ class ShaderNodeScShader(ShaderNodeScNode):
     bl_label = "Supercell IO Shader"
     bl_icon = "SHADERFX"
 
-    preset_id: bpy.props.StringProperty(default="")
+    preset_id: bpy.props.StringProperty(default="")  # ty: ignore[invalid-type-form]
 
     def copy(self, node):
         super().copy(node)

@@ -1,22 +1,27 @@
 from pathlib import PurePath
+from typing import TYPE_CHECKING, Any
+
 import bpy
-from bpy.types import Material, Image, NodeSocketFloatFactor, NodeSocketBool
-from ..materials import ScShaderMaterial, ScBlendMode
-from .nodes import ShaderNodeScShader
-from ..shader_presets import ShaderPresets
-from ..utilities import typing
-from ..materials.variables import (
-    ShaderFloatVectorProperty,
-    ShaderFloatProperty,
-    ShaderBooleanProperty,
-    ShaderTextureProperty,
-)
+from bpy.types import Image, Material, NodeSocketBool, NodeSocketFloatFactor
+from io_scene_gltf2.blender.exp.cache import cached
 from io_scene_gltf2.blender.exp.material.image import __make_image as make_image
 from io_scene_gltf2.io.com import gltf2_io
-from io_scene_gltf2.blender.exp.cache import cached
 from io_scene_gltf2.io.com.constants import TextureFilter, TextureWrap
+
+from ..materials import ScBlendMode, ScShaderMaterial
+from ..materials.variables import (
+    ShaderBooleanProperty,
+    ShaderFloatProperty,
+    ShaderFloatVectorProperty,
+    ShaderTextureProperty,
+)
+from ..shader_presets import ShaderPresets
+from ..utilities import typing
 from ..utilities.shader import ShaderUtils
-from typing import Any
+from .nodes import ShaderNodeScShader
+
+if TYPE_CHECKING:
+    from ...exporter.ui import glTFSupercellExporterProperties
 
 
 class ShaderExporter:
@@ -120,7 +125,12 @@ class ShaderExporter:
 
     def set_texture_prop(self, name: str, index: int):
         """Set the texture based on the socket"""
-        props = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+        assert bpy.context.scene is not None
+        assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+        props: "glTFSupercellExporterProperties" = (
+            bpy.context.scene.glTFSupercellExporterProperties
+        )  # ty: ignore[invalid-assignment]
 
         node = ShaderUtils.get_texture_from_socket(
             name, self.shader.inputs[index], self.export_settings

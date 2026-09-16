@@ -45,7 +45,7 @@ class LibraryLoader:
     def instantiate_utility(
         node_tree: ShaderNodeTree, tree_id: str
     ) -> "ShaderNodeScUtility":
-        return LibraryLoader.instantiate_node("ShaderNodeScUtility", node_tree, tree_id)  # type: ignore # noqa
+        return LibraryLoader.instantiate_node("ShaderNodeScUtility", node_tree, tree_id)  # noqa
 
     @staticmethod
     def instantiate_shader(
@@ -53,7 +53,7 @@ class LibraryLoader:
     ) -> "ShaderNodeScShader":
         shader: ShaderNodeScShader = LibraryLoader.instantiate_node(
             "ShaderNodeScShader", node_tree, tree_id
-        )  # type: ignore # noqa
+        )  # noqa
         shader.preset_id = tree_id
 
         return shader

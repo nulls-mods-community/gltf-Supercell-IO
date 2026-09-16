@@ -18,7 +18,7 @@ class ShaderPresets:
     @staticmethod
     def get_preset_by_id(id: str) -> Type[ShaderPresetDescriptor]:
         preset = None
-        match (id):
+        match id:
             case ShaderPresetType.UNLIT:
                 preset = UnlitShaderPreset
 

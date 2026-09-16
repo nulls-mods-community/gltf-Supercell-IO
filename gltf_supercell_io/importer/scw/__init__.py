@@ -281,11 +281,13 @@ class ScwFile:
     def _import_node_instance(self, node: Node, instance: ScwInstance, nodes: ScwNodes):
         # Skinned geometry
         if isinstance(instance, ScwControllerInstance):
-            node.mesh, node.skin = self._instantiate_skinned_mesh_instance(instance, nodes)  # type: ignore
+            node.mesh, node.skin = self._instantiate_skinned_mesh_instance(
+                instance, nodes
+            )
 
         # Geometry
         elif isinstance(instance, ScwGeometryInstance):
-            node.mesh = self._instantiate_mesh_instance(instance)  # type: ignore
+            node.mesh = self._instantiate_mesh_instance(instance)
 
         # Camera
         elif isinstance(instance, ScwCameraInstance):
@@ -311,7 +313,7 @@ class ScwFile:
             elif isinstance(instances, ScwCameraInstance):
                 node_name = f"{node.name}-camera-{i}"
 
-            gltf_node.name = node_name  # type: ignore
+            gltf_node.name = node_name
             self._import_node_instance(gltf_node, instance, nodes)
             node.children.append(len(self.gltf.data.nodes))
             self.gltf.data.nodes.append(gltf_node)
@@ -405,11 +407,11 @@ class ScwFile:
             # Processing node bind transformation
             if len(node.frames) > 0:
                 frame = node.frames[0]
-                gltf_node.translation = [val for val in frame.translation]  # type: ignore
+                gltf_node.translation = [val for val in frame.translation]
                 if frame.rotation is not None:
-                    gltf_node.rotation = [val for val in frame.rotation]  # type: ignore
+                    gltf_node.rotation = [val for val in frame.rotation]
 
-                gltf_node.scale = [val for val in frame.scale]  # type: ignore
+                gltf_node.scale = [val for val in frame.scale]
 
             # Processing instances
             self._import_node_instances(node.instances, gltf_node, nodes)
@@ -554,7 +556,7 @@ class ScwFile:
 
                 case _:
                     self.gltf.log.warning(
-                        f"Unknown SCW object {signature.decode("ascii", errors="ignore")}"
+                        f"Unknown SCW object {signature.decode('ascii', errors='ignore')}"
                     )
 
             if end_offset > data.pos():

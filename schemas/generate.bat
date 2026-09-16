@@ -1,1 +1,0 @@
-call flatc -o ../gltf_supercell_io/com/flatbuffer glTF.fbs --python --gen-onefile --no-includes

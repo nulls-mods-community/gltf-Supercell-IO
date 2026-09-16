@@ -1,11 +1,13 @@
+from typing import TYPE_CHECKING
+
 import bpy
 import numpy as np
-from ...com.utilities.patcher import Patch
 from io_scene_gltf2.blender.exp.primitive_attributes import __gather_attribute
-from ...com.odin.attribute import OdinRawVertexAttribute
-from ...com.odin.constants import OdinAttributeType, OdinAttributeFormat
 from io_scene_gltf2.io.com.constants import ComponentType, DataType
-from typing import TYPE_CHECKING
+
+from ...com.odin.attribute import OdinRawVertexAttribute
+from ...com.odin.constants import OdinAttributeFormat, OdinAttributeType
+from ...com.utilities.patcher import Patch
 
 if TYPE_CHECKING:
     from ..ui import glTFSupercellExporterProperties
@@ -105,7 +107,12 @@ def gather_skins(blender_primitive, export_settings):
 
 
 def gather_primitive_attributes(blender_primitive, export_settings: dict):
-    props: "glTFSupercellExporterProperties" = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+    assert bpy.context.scene is not None
+    assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+    props: "glTFSupercellExporterProperties" = (
+        bpy.context.scene.glTFSupercellExporterProperties
+    )  # ty: ignore[invalid-assignment]
 
     attributes = {}
     skin_done = False

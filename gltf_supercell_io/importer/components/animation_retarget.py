@@ -1,11 +1,12 @@
-import bpy
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from mathutils import Matrix
-from .component import glTF2BaseImporterComponent, requires_extension
 
-from io_scene_gltf2.blender.imp.vnode import VNode
+import bpy
 from io_scene_gltf2.blender.imp.animation_utils import make_fcurve
+from io_scene_gltf2.blender.imp.vnode import VNode
+from mathutils import Matrix
+
+from .component import glTF2BaseImporterComponent, requires_extension
 
 if TYPE_CHECKING:
     from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
@@ -137,6 +138,7 @@ class AnimationImporter(glTF2BaseImporterComponent):
         target_animation = target.animation_data
         if target_animation is None:
             target_animation = target.animation_data_create()
+            assert target_animation is not None
 
         start, end = self.get_action_range(source)
         rest_offset = self.compute_rest_offset(target)
@@ -182,7 +184,7 @@ class AnimationImporter(glTF2BaseImporterComponent):
         # Cache parents once
         parent_of = {
             n: (
-                target.data.bones[n].parent.name  # type: ignore
+                target.data.bones[n].parent.name
                 if target.data.bones[n].parent
                 else None
             )
@@ -367,7 +369,7 @@ class AnimationImporter(glTF2BaseImporterComponent):
         retarget_armatures.add(gltf_armature.name_full)
 
         success = self.retarget_animation(gltf_armature, self.armature, name)
-        vnodes: dict[Any, VNode] = gltf.vnodes  # type: ignore
+        vnodes: dict[Any, VNode] = gltf.vnodes
 
         if success:
             gltf.import_settings["import_select_created_objects"] = False
@@ -380,7 +382,7 @@ class AnimationImporter(glTF2BaseImporterComponent):
 
                 is_arma = False
                 if hasattr(vnode, "is_arma"):
-                    is_arma = vnode.is_arma  # type: ignore
+                    is_arma = vnode.is_arma
 
                 if not is_arma:
                     continue

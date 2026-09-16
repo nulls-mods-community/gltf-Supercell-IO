@@ -12,9 +12,7 @@ class OdinRawAnimationReader(OdinAnimationReader):
         self.used_nodes = animation.get("nodes")  # type: ignore
         self.keyframe_mapping = animation.get("keyframeCounts")
 
-        nodes_per_keyframe: list[int] = animation.get(
-            "nodesNumberPerKeyframe"
-        )  # type: ignore
+        nodes_per_keyframe: list[int] = animation.get("nodesNumberPerKeyframe")  # type: ignore
         if self.keyframe_mapping:
             self.keyframe_mapping = [
                 num
@@ -46,9 +44,7 @@ class OdinRawAnimationReader(OdinAnimationReader):
             remapped = np.reshape(
                 self.buffer, (keyframes_total, frame_transform_length)
             )
-            data = np.split(
-                remapped, np.cumsum(self.keyframe_mapping)[:-1]
-            )  # type: ignore
+            data = np.split(remapped, np.cumsum(self.keyframe_mapping)[:-1])
         else:
             data = np.reshape(
                 self.buffer,

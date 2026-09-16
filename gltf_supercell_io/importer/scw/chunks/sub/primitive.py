@@ -23,19 +23,19 @@ class ScwPrimitive(ScwChunk):
     material_bind_name = ""
     attribute_indices: tuple[np.ndarray, ...] = ()
 
-    def __br_read__(self, br: "BinaryReader", *args, **kwargs):
-        self.material_bind_name = br.read_str()
+    def __br_read__(self, br: "BinaryReader", *_args, **_kwargs):
+        self.material_bind_name: str | None = br.read_str()
 
         count = br.read_uint32()
         inputs_count = br.read_uint8()
         size = br.read_uint8()
-        
+
         elements_count = count * inputs_count * 3
         data_size = elements_count * size
 
         if size == 3:
             data = np.frombuffer(br.read_bytes(data_size), ">u1")
-        
+
             array = np.empty(elements_count, np.uint32)
             array[:] = data[:, 0]
             array <<= 8

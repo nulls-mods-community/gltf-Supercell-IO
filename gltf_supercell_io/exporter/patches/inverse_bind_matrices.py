@@ -1,11 +1,14 @@
+from typing import TYPE_CHECKING
 import bpy
+from io_scene_gltf2.blender.exp.accessors import gather_accessor
+from io_scene_gltf2.io.com.constants import ComponentType, DataType
+from io_scene_gltf2.io.exp.binary_data import BinaryData
 from mathutils import Matrix, Vector
 
-from io_scene_gltf2.blender.exp.accessors import gather_accessor
-from io_scene_gltf2.io.exp.binary_data import BinaryData
-from io_scene_gltf2.io.com.constants import ComponentType, DataType
 from ...com.utilities.patcher import Patch
 
+if TYPE_CHECKING:
+    from ..ui import glTFSupercellExporterProperties
 
 def inverse_bind_matrices_hook(armature_uuid: str, export_settings: dict = {}):
     blender_armature_object = (
@@ -33,7 +36,13 @@ def inverse_bind_matrices_hook(armature_uuid: str, export_settings: dict = {}):
     def __collect_matrices(bone: bpy.types.PoseBone):
         scale = Vector((1.0, 1.0, 1.0))
 
-        props = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+        assert bpy.context.scene is not None
+        assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+        props: "glTFSupercellExporterProperties" = (
+            bpy.context.scene.glTFSupercellExporterProperties
+        )  # ty: ignore[invalid-assignment]
+
         if props.enabled:
             scaleOverride: list[float] = bone.get("scScaleOverride")
             if scaleOverride is not None:
@@ -80,7 +89,7 @@ def inverse_bind_matrices_hook(armature_uuid: str, export_settings: dict = {}):
         len(inverse_matrices) // DataType.num_elements(DataType.Mat4),
         None,
         None,
-        DataType.Mat4,  # type: ignore
+        DataType.Mat4,
         None,
         export_settings,
     )

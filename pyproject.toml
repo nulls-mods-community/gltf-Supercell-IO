@@ -1,0 +1,22 @@
+[project]
+name = "gltf-supercell-io"
+version = "0.1.0"
+description = "glTF Blender IO Plugin for import/export Supercell Odin (.glb) files"
+readme = "README.md"
+requires-python = ">=3.11.0"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "fake-bpy-module>=20260915",
+    "numpy>=2.4.6",
+    "requests>=2.34.2",
+    "ruff>=0.16.7",
+    "ty>=0.0.81",
+]
+
+[tool.ty.environment]
+extra-paths = ["./extern/glTF-Blender-IO/addons"]
+
+[tool.ty.src]
+exclude = ["gltf_supercell_io/com/flatbuffer/glTF_generated.py", "extern/"]

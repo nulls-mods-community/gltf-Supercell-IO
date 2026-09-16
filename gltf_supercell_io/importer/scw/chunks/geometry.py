@@ -4,7 +4,7 @@ from typing import Optional
 import numpy as np
 from mathutils import Matrix
 
-from ....com.utilities.binary_reader import BinaryReader, Whence
+from ....com.utilities.binary_reader import BinaryReader
 from . import ScwChunk
 from .sub.attribute import ScwAttribute
 from .sub.joint import ScwJoint
@@ -33,7 +33,7 @@ class ScwGeometry(ScwChunk):
     weights: Optional[ScwWeights] = None
     primitives: tuple[ScwPrimitive, ...] = ()
 
-    def __br_read__(self, br: "BinaryReader", version: int = -1, *args, **kwargs):
+    def __br_read__(self, br: "BinaryReader", version: int = -1, *_args, **_kwargs):
         self.name = br.read_str() or "Mesh"
         br.read_str()  # Group name
 
@@ -45,7 +45,7 @@ class ScwGeometry(ScwChunk):
 
         has_bind_matrix = br.read_bool()
         if has_bind_matrix:
-            self.bind_matrix = br.read_matrix()
+            self.bind_matrix: Matrix = br.read_matrix()
 
         joints_count = br.read_uint8()
         self.joints = br.read_struct(ScwJoint, joints_count)
@@ -58,11 +58,14 @@ class ScwGeometry(ScwChunk):
             else:
                 weights_dtype = ubyte_weights_dtype
                 normalize_value = 0xFF
-            
+
             weights_data = br.read_bytes(weight_count * weights_dtype.itemsize)
             weights = np.frombuffer(weights_data, weights_dtype, weight_count)
-            
-            self.weights = ScwWeights(weights["joints"], weights["weights"] / np.float32(normalize_value) )
+
+            self.weights = ScwWeights(
+                weights["joints"],  # ty: ignore[invalid-argument-type]
+                weights["weights"] / np.float32(normalize_value),  # ty: ignore[invalid-argument-type]
+            )
 
         primitives_count = br.read_uint8()
         self.primitives = br.read_struct(ScwPrimitive, primitives_count)

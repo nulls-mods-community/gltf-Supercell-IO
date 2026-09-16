@@ -117,7 +117,7 @@ class SkinExporter(glTF2BaseExporterComponent):
 
         while queue:
             key = queue.popleft()
-            vnode: VExportNode = vtree.nodes[key]  # type: ignore
+            vnode: VExportNode = vtree.nodes[key]
 
             parent_uuid = vnode.parent_uuid  # type: ignore
             parent_acc = ancestor_cumulative.get(parent_uuid, identity)
@@ -136,7 +136,7 @@ class SkinExporter(glTF2BaseExporterComponent):
                 and (cx, cy, cz) != identity
             ):
                 scale_matrix = Matrix.Diagonal((cx, cy, cz, 1.0))
-                vnode.matrix_world = vnode.matrix_world @ scale_matrix  # type: ignore
+                vnode.matrix_world = vnode.matrix_world @ scale_matrix
 
             for child_uuid in vnode.children:
                 queue.append(child_uuid)

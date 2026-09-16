@@ -1,31 +1,30 @@
-import bpy
+# ty: ignore[invalid-type-form]
 import os
-from typing import Any, cast, TYPE_CHECKING, Optional
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Optional, cast
+
+import bpy
+
+from ...net.asset_request import AssetRequest, download_asset_detailed, list_versions
 from .helpers import get_version_sha, tempdir
 from .worker import RefreshRequest, update_asset_browser
-from ...net.asset_request import (
-    AssetRequest,
-    download_asset_detailed,
-    list_versions,
-)
-from pathlib import Path
 
 if TYPE_CHECKING:
-    from .asset_browser import AssetBrowserProperties, AssetBrowserItem
     from ....importer.ui import glTFSupercellImporterProperties
+    from .asset_browser import AssetBrowserItem, AssetBrowserProperties
 
 
 class ASSETS_UL_list(bpy.types.UIList):
     def draw_item(  # type: ignore
         self,
-        context,
+        _context,
         layout,
-        data,
+        _data,
         item,
-        icon,
-        active_data,
-        active_propname,
-        index,
+        _icon,
+        _active_data,
+        _active_propname,
+        _index,
     ):
         layout.label(text=item.name, icon="FILE")
 
@@ -43,7 +42,7 @@ class ASSETS_OT_refresh(bpy.types.Operator):
         except Exception:
             pass
 
-    def execute(self, context):  # type: ignore
+    def execute(self, context):
         props = cast(
             "AssetBrowserProperties",
             cast(Any, context.scene).sc_asset_browser,
@@ -123,7 +122,7 @@ class ASSETS_OT_import_api(bpy.types.Operator):
 
         return output_path
 
-    def execute(self, context):  # type: ignore
+    def execute(self, context):
         props = cast(
             "AssetBrowserProperties", cast(Any, context.scene).sc_asset_browser
         )
@@ -146,7 +145,7 @@ class ASSETS_OT_import(bpy.types.Operator):
     bl_idname = "supercell.assets_import"
     bl_label = "Import GLB"
 
-    def execute(self, context):  # type: ignore
+    def execute(self, context):
         props = cast(
             "AssetBrowserProperties", cast(Any, context.scene).sc_asset_browser
         )

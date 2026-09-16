@@ -19,4 +19,4 @@ class ScwHeader(ScwChunk):
 
         self.reference_file = br.read_str()
         if end_offset > br.pos() and self.version >= 1:
-            br.read_bool() # Used in Scene::updateInstanceTransformations
+            br.read_bool()  # Used in Scene::updateInstanceTransformations

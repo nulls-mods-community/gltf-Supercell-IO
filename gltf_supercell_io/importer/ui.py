@@ -1,3 +1,4 @@
+# ty: ignore[invalid-type-form]
 from bpy.types import UILayout, Context, PropertyGroup
 from bpy.props import (
     BoolProperty,
@@ -28,7 +29,6 @@ fps_source_items = (
     ),
     ("CUSTOM", "Custom", "The sequence is resampled to a custom frame rate", 2),
 )
-
 
 class glTFSupercellTextureOverride(PropertyGroup):
     name: StringProperty(description="Name of overridable texture e.g diffuseTex2D")

@@ -1,20 +1,24 @@
-import bpy
-import numpy as np
-from ...com.utilities.patcher import Patch
-from io_scene_gltf2.io.com.constants import ComponentType, DataType, BufferViewTarget
-from io_scene_gltf2.blender.exp.cache import cached_by_key
-from io_scene_gltf2.blender.exp.primitives import (
-    get_primitive_cache_key,
-    __gather_targets,
-    __gather_cache_primitives as base_primitive_cache,
-    __gather_attributes,
-)
-from io_scene_gltf2.io.exp.binary_data import BinaryData
-import io_scene_gltf2.blender.exp.pointcloud as pointcloud
-from io_scene_gltf2.blender.exp.primitive_extract import extract_primitives
-from io_scene_gltf2.blender.exp.accessors import gather_accessor
-from io_scene_gltf2.io.exp.user_extensions import export_user_extensions
 from typing import TYPE_CHECKING, Optional
+
+import bpy
+import io_scene_gltf2.blender.exp.pointcloud as pointcloud
+import numpy as np
+from io_scene_gltf2.blender.exp.accessors import gather_accessor
+from io_scene_gltf2.blender.exp.cache import cached_by_key
+from io_scene_gltf2.blender.exp.primitive_extract import extract_primitives
+from io_scene_gltf2.blender.exp.primitives import __gather_attributes
+from io_scene_gltf2.blender.exp.primitives import (
+    __gather_cache_primitives as base_primitive_cache,
+)
+from io_scene_gltf2.blender.exp.primitives import (
+    __gather_targets,
+    get_primitive_cache_key,
+)
+from io_scene_gltf2.io.com.constants import BufferViewTarget, ComponentType, DataType
+from io_scene_gltf2.io.exp.binary_data import BinaryData
+from io_scene_gltf2.io.exp.user_extensions import export_user_extensions
+
+from ...com.utilities.patcher import Patch
 from ..components.component import PrimitiveData
 
 if TYPE_CHECKING:
@@ -33,7 +37,12 @@ def __gather_cache_primitives(
     """
     Gather parts that are identical for instances, i.e. excluding materials.
     """
-    props: "glTFSupercellExporterProperties" = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+    assert bpy.context.scene is not None
+    assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+    props: "glTFSupercellExporterProperties" = (
+        bpy.context.scene.glTFSupercellExporterProperties
+    )  # ty: ignore[invalid-assignment]
     if not props.use_odin:
         return base_primitive_cache(
             materials,
@@ -112,7 +121,7 @@ def __gather_cache_primitives(
         primitive = PrimitiveData(
             attributes,
             indices,
-            mode,  # type: ignore
+            mode,
             None if material is None else materials[material],
             targets,
         )
@@ -146,11 +155,11 @@ def __gather_cache_primitives(
 
             primitive.indices = gather_accessor(
                 indices_data,
-                indices_type,  # type: ignore
+                indices_type,
                 len(primitive.indices),
                 None,
                 None,
-                DataType.Scalar,  # type: ignore
+                DataType.Scalar,
                 None,
                 export_settings,
             )

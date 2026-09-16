@@ -1,5 +1,10 @@
 __pycache__
-.vscode/
 dist/
+# Track vendor wheels (custom packages not on PyPI)
+gltf_supercell_io/vendor/
+# Ignore wheels directory (generated at build time)
+gltf_supercell_io/wheels
 *.blend1
+
+.DS_Store
     

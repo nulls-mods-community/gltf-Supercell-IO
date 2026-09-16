@@ -1,8 +1,10 @@
-from flatbuffers import flexbuffers, Builder
-from enum import IntEnum
-import numpy as np
 from collections import OrderedDict
+from enum import IntEnum
 from typing import Any
+
+import numpy as np
+from flatbuffers import Builder, flexbuffers
+
 from . import glTF_generated as flat
 
 
@@ -524,7 +526,7 @@ def serialize_gather(builder: Builder, class_name: str, gather: dict) -> Any:
 
 def serialize_array(
     builder: Builder, data: list, schema: Any, class_name: str, key: str
-) -> int or list:
+):
     if schema is int:
         array = np.array(data, dtype=np.int32)
         return builder.CreateNumpyVector(array)

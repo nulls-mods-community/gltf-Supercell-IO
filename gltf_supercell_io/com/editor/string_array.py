@@ -1,16 +1,14 @@
+# ty: ignore[invalid-type-form]
+import typing
+
 import bpy
-from bpy.types import (
-    PropertyGroup,
-    Operator,
-    UIList,
-)
-from bpy.props import (
-    StringProperty,
-)
+from bpy.props import IntProperty, StringProperty
+from bpy.types import Context, Operator, PropertyGroup, UILayout, UIList
+from typing_extensions import override
 
 
 class STRING_ARRAY_STATE(bpy.types.PropertyGroup):
-    active_index: bpy.props.IntProperty(default=0)
+    active_index: IntProperty(default=0)
 
 
 def get_state():
@@ -26,10 +24,8 @@ class DirectoryStringItem(PropertyGroup):
 
 
 class StringArray:
-
     @staticmethod
     def draw(layout, data_path, collection_prop, label="Items", default_value=""):
-
         data = bpy.context.path_resolve(data_path)
         state = get_state()
 
@@ -53,18 +49,23 @@ class StringArray:
 
 
 class STRING_ARRAY_UL_items(UIList):
+    @override
     def draw_item(
         self,
-        context: bpy.types.Context,
-        layout: bpy.types.UILayout,
-        data,
-        item,
+        context: Context | None | None,
+        layout: UILayout,
+        data: None | typing.Any | None,
+        item: None | typing.Any | None,
         icon: int | None,
-        active_data,
+        active_data: typing.Any,
         active_property: str | None,
         index: int | None,
         flt_flag: int | None,
-    ):
+    ) -> None:
+        _context = context
+        _icon = icon
+        _flt_flag = flt_flag
+
         state = get_state()
 
         if (

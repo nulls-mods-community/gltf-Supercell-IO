@@ -14,10 +14,23 @@ exporter -- sampled bone keyframes and FCurve keyframes -- and multiply every
 ``scale`` keyframe value (including cubic-spline tangents) by the bone's ``scScaleOverride``
 """
 
+from typing import TYPE_CHECKING, Optional, Tuple
+
 import bpy
-from typing import Optional, Tuple
+from io_scene_gltf2.blender.exp.animation.fcurves.keyframes import (
+    gather_fcurve_keyframes as _orig_fcurve_keyframes,
+)  # noqa: E402
+
+# Capture the originals before patching. We rely on the io_scene_gltf2
+# addon being already loaded at the time this SC addon is registered.
+from io_scene_gltf2.blender.exp.animation.sampled.armature.keyframes import (
+    gather_bone_sampled_keyframes as _orig_sampled_armature_keyframes,
+)  # noqa: E402
 
 from ...com.utilities.patcher import Patch
+
+if TYPE_CHECKING:
+    from ..ui import glTFSupercellExporterProperties
 
 # -----------------------------------------------------------------------
 # Helpers
@@ -74,16 +87,6 @@ def _apply_scale_override_to_keyframes(keyframes, factors):
                 kf.set_value_index_out(i, orig[i] * factors3[i])
 
 
-# Capture the originals before patching. We rely on the io_scene_gltf2
-# addon being already loaded at the time this SC addon is registered.
-from io_scene_gltf2.blender.exp.animation.sampled.armature.keyframes import (  # noqa: E402
-    gather_bone_sampled_keyframes as _orig_sampled_armature_keyframes,
-)
-from io_scene_gltf2.blender.exp.animation.fcurves.keyframes import (  # noqa: E402
-    gather_fcurve_keyframes as _orig_fcurve_keyframes,
-)
-
-
 def _patched_sampled_armature_keyframes(
     armature_uuid: str,
     bone: str,
@@ -93,7 +96,13 @@ def _patched_sampled_armature_keyframes(
     node_channel_is_animated: bool,
     export_settings,
 ):
-    props = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+    assert bpy.context.scene is not None
+    assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+    props: "glTFSupercellExporterProperties" = (
+        bpy.context.scene.glTFSupercellExporterProperties
+    )  # ty: ignore[invalid-assignment]
+
     keyframes = _orig_sampled_armature_keyframes(
         armature_uuid,
         bone,
@@ -126,7 +135,13 @@ def _patched_fcurve_keyframes(
     extra_mode: bool,
     export_settings,
 ):
-    props = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+    assert bpy.context.scene is not None
+    assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+    props: "glTFSupercellExporterProperties" = (
+        bpy.context.scene.glTFSupercellExporterProperties
+    )  # ty: ignore[invalid-assignment]
+
     keyframes = _orig_fcurve_keyframes(
         obj_uuid, channel_group, bone, custom_range, extra_mode, export_settings
     )

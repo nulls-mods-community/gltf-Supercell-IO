@@ -1,10 +1,16 @@
-import bpy
+import struct
 import sys
 import traceback
+from typing import TYPE_CHECKING
+
+import bpy
 from io_scene_gltf2.blender.exp.export import __write_file as base_write_file
+
 from ...com.flatbuffer import serialize_glb_json
 from ...com.utilities.patcher import Patch
-import struct
+
+if TYPE_CHECKING:
+    from ..ui import glTFSupercellExporterProperties
 
 
 def save_gltf(gltf: dict, export_settings: dict, glb_buffer: bytes):
@@ -56,7 +62,13 @@ def save_gltf(gltf: dict, export_settings: dict, glb_buffer: bytes):
 
 
 def write_file(json, buffer, export_settings):
-    props = bpy.context.scene.glTFSupercellExporterProperties  # type: ignore
+    assert bpy.context.scene is not None
+    assert hasattr(bpy.context.scene, "glTFSupercellExporterProperties")
+
+    props: "glTFSupercellExporterProperties" = (
+        bpy.context.scene.glTFSupercellExporterProperties
+    )  # ty: ignore[invalid-assignment]
+
     if not props.enabled or not props.use_odin or props.debug_output:
         return base_write_file(json, buffer, export_settings)
 

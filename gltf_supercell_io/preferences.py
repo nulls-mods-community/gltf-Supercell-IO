@@ -1,8 +1,10 @@
-import bpy
-from bpy.types import AddonPreferences
-from bpy.props import CollectionProperty
-from .com.editor.string_array import DirectoryStringItem, StringArray
 from typing import cast
+
+import bpy
+from bpy.props import CollectionProperty
+from bpy.types import AddonPreferences
+
+from .com.editor.string_array import DirectoryStringItem, StringArray
 
 
 def get_package_name():
@@ -14,7 +16,7 @@ class SupercellGLTFPreferences(AddonPreferences):
     # when defining this for add-on extensions or a sub-module of a Python package.
     bl_idname = get_package_name()
 
-    texture_lookup: CollectionProperty(type=DirectoryStringItem, name="Paths")
+    texture_lookup: CollectionProperty(type=DirectoryStringItem, name="Paths")  # ty: ignore[invalid-type-form]
 
     def draw(self, context):
         layout = self.layout

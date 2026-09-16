@@ -54,7 +54,7 @@ class OdinPackedReader(OdinAnimationReader):
         node = self.nodes[node_index]
         flags = self.flags[node_index]
         total_frame_count = int(node.get("frameCount"))  # type: ignore
-        self.data_size = int(node.get("dataSize", 0))  # type: ignore
+        self.data_size = int(node.get("dataSize", 0))
         self.node_base_data_offset = node_index * self.stride
 
         # Base transform
@@ -83,7 +83,7 @@ class OdinPackedReader(OdinAnimationReader):
             bScale,
             nTranslation,
             nRotation,
-            nScale,  # type: ignore
+            nScale,
         )
 
         self.data.append((translation, rotation, scale))

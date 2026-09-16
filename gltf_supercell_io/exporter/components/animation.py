@@ -266,12 +266,16 @@ class AnimationExporter(glTF2BaseExporterComponent):
             # It seems that this node is static
             # We could just assign base animation values to node's properties
             if init_translation is not None:
-                node.translation = [float(init_translation[i]) for i in range(TRANSLATION_CHANNELS)]
+                node.translation = [
+                    float(init_translation[i]) for i in range(TRANSLATION_CHANNELS)
+                ]
             else:
                 node.translation = None
 
             if init_rotation is not None:
-                node.rotation = [float(init_rotation[i]) for i in range(ROTATION_CHANNELS)]
+                node.rotation = [
+                    float(init_rotation[i]) for i in range(ROTATION_CHANNELS)
+                ]
             else:
                 node.rotation = None
 
@@ -285,7 +289,11 @@ class AnimationExporter(glTF2BaseExporterComponent):
         # Create RLE block mapping
         rle_blocks: list[int] = []
         rle_length = 1  # First frame is literal frame
-        last_frame: tuple[np.ndarray, ...] = (init_translation, init_rotation, init_scale)  # type: ignore
+        last_frame: tuple[np.ndarray, ...] = (
+            init_translation,
+            init_rotation,
+            init_scale,
+        )  # type: ignore
         for f in range(1, frame_count):
             is_literal_frame = False
 
@@ -361,7 +369,8 @@ class AnimationExporter(glTF2BaseExporterComponent):
             if flags.has_scale and scale_count > f:
                 frame_scale = scale[f]  # type: ignore
                 maximum_scale_delta = max(
-                    maximum_scale_delta, abs(frame_scale[0] - init_scale[0])  # type: ignore
+                    maximum_scale_delta,
+                    abs(frame_scale[0] - init_scale[0]),  # type: ignore
                 )
                 if flags.has_scale3D:
                     maximum_scale_delta = max(
@@ -430,7 +439,11 @@ class AnimationExporter(glTF2BaseExporterComponent):
                 write(pack_delta(source[1], base[1], float(scale)))
                 write(pack_delta(source[2], base[2], float(scale)))
 
-        last_frame: tuple[np.ndarray, ...] = (init_translation, init_rotation, init_scale)  # type: ignore
+        last_frame: tuple[np.ndarray, ...] = (
+            init_translation,
+            init_rotation,
+            init_scale,
+        )  # type: ignore
         while packed.frame_count > frame_index:
             rle_length = rle_blocks[rle_block_idx]
             write(rle_length)
@@ -513,7 +526,7 @@ class AnimationExporter(glTF2BaseExporterComponent):
             node_channels = nodes.setdefault(key, {})
             sampler: "AnimationSampler" = animation.samplers[channel.sampler]
 
-            node_channels[target.path] = sampler  # type: ignore
+            node_channels[target.path] = sampler
 
     @requires_odin
     def gather_gltf_hook(self, active_scene_idx, scenes, animations, export_settings):

@@ -10,7 +10,6 @@ from ..scw import ScwFile
 
 
 class SupercellShaderImporter(glTF2BaseImporterComponent):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.material_override: list[dict] = []
@@ -77,7 +76,7 @@ class SupercellShaderImporter(glTF2BaseImporterComponent):
         self, gltf_material, vertex_color: str, gltf
     ):
         extensions = gltf_material.extensions = gltf_material.extensions or {}
-        descriptor: dict | None = extensions.get(glTF_material_extension_name)  # type: ignore
+        descriptor: dict | None = extensions.get(glTF_material_extension_name)
         material_name: str | None = (
             gltf_material.name if descriptor is None else descriptor.get("name")
         )

@@ -1,26 +1,26 @@
+from typing import TYPE_CHECKING, Any, Dict
+
 import bpy
-from mathutils import Vector
-from typing import TYPE_CHECKING, Dict, Any
-
-from .component import glTF2BaseImporterComponent
-from ...com.animation.reader import OdinAnimationReader
-from ...com.animation import OdinAnimation
-from ...com import glTF_extension_name
-from ...com.odin.animation import (
-    TRANSLATION_CHANNELS,
-    ROTATION_CHANNELS,
-    SCALE_CHANNELS,
-)
-
-from io_scene_gltf2.blender.imp.vnode import VNode
 from io_scene_gltf2.blender.imp.animation_utils import (
     get_or_create_action_and_slot,
     make_fcurve,
 )
+from io_scene_gltf2.blender.imp.vnode import VNode
+from mathutils import Vector
+
+from ...com import glTF_extension_name
+from ...com.animation import OdinAnimation
+from ...com.animation.reader import OdinAnimationReader
+from ...com.odin.animation import (
+    ROTATION_CHANNELS,
+    SCALE_CHANNELS,
+    TRANSLATION_CHANNELS,
+)
+from .component import glTF2BaseImporterComponent
 
 if TYPE_CHECKING:
-    from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
     from io_scene_gltf2.io.com.gltf2_io import Node
+    from io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
 
 
 class OdinAnimationImporter(glTF2BaseImporterComponent):
@@ -36,7 +36,7 @@ class OdinAnimationImporter(glTF2BaseImporterComponent):
         gltf: "glTFImporter",
     ):
         vnodes: Dict[Any, VNode] = gltf.vnodes  # type: ignore
-        vnode: VNode = vnodes[node_idx]  # type: ignore
+        vnode: VNode = vnodes[node_idx]
 
         action, slot = get_or_create_action_and_slot(gltf, node_idx, anim_idx, path)
 
@@ -48,7 +48,8 @@ class OdinAnimationImporter(glTF2BaseImporterComponent):
             group_name = "Object Transforms"
             num_components = 3
             values = [
-                gltf.loc_gltf_to_blender(vals) for vals in values  # type: ignore #noqa
+                gltf.loc_gltf_to_blender(vals)  # ty: ignore[unresolved-attribute]
+                for vals in values  # noqa
             ]
             values = vnode.base_locs_to_final_locs(values)
 
@@ -160,7 +161,7 @@ class OdinAnimationImporter(glTF2BaseImporterComponent):
                     scale_rot_swap_matrix,
                 )
 
-                swap = scale_rot_swap_matrix(vnode.rotation_before)  # type: ignore
+                swap = scale_rot_swap_matrix(vnode.rotation_before)
                 swapped_override = swap @ scale_override
                 ix, iy, iz = _safe_inverse(swapped_override)
                 values = [
@@ -185,7 +186,7 @@ class OdinAnimationImporter(glTF2BaseImporterComponent):
 
         coords = [0] * (2 * duration)
         coords[::2] = (  # type: ignore
-            (animation.frame_spf * i) * fps for i in range(duration)  # type: ignore
+            (animation.frame_spf * i) * fps for i in range(duration)
         )
 
         for i in range(0, num_components):

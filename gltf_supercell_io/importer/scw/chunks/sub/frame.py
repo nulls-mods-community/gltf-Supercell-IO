@@ -18,7 +18,7 @@ class ScwFrame(ScwChunk):
         structs: list[Self] = [],
         index=0,
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
         if index == 0:
             flags = 0xFF
