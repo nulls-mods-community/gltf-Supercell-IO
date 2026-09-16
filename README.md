@@ -61,13 +61,19 @@ Instead of relying on external command-line tools or multi-step converters, this
 ## Installation
 
 ### Installing extensions repository
-1. Go to the **[Releases](https://github.com/nulls-mods-community/gltf-Supercell-IO/releases/latest)** section and download the latest `.zip` package.
-2. Launch **Blender 5.2+**.
-3. Navigate to **Edit** ➔ **Preferences** (or press `Ctrl` + `,`).
-4. Select the **Add-ons** / **Get Extensions** tab.
-5. Click the Repositories and with a link to a `index.json` file: `https://raw.githubusercontent.com/nulls-mods-community/gltf-Supercell-IO/refs/heads/main/index.json`
+
+1. Launch **Blender 5.2+**.
+2. Navigate to **Edit** ➔ **Preferences** (or press `Ctrl` + `,`).
+3. Select the **Add-ons** / **Get Extensions** tab.
+4. Click the Repositories and with a link to a `index.json` file: 
+    ```
+    https://raw.githubusercontent.com/nulls-mods-community/gltf-Supercell-IO/refs/heads/main/index.json
+    ```
 
 ### Installing zip manually
+
+> [!NOTE]
+> This is a deprecated method, please use the extensions repository.
 
 1. Go to the **[Releases](https://github.com/nulls-mods-community/gltf-Supercell-IO/releases/latest)** section and download the latest `.zip` package.
 2. Launch **Blender 5.2+**.
