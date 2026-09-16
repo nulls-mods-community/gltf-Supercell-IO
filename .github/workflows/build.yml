@@ -6,12 +6,9 @@ on:
       - "v*"
   workflow_dispatch:
 
-env:
-  CONVERTER_NAME: gltf_image_converter
-  PLUGIN_NAME: gltf_supercell_io
-
 permissions:
   contents: write
+  actions: read
 
 jobs:
   build-plugin:
@@ -24,18 +21,59 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Get release version from tag
+      # Find latest Blender build
+      - name: Find latest Blender build
+        id: blender_version
         run: |
-          echo "VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
+          echo "Looking for Blender 5.2"
+          BLENDER_URL="$(curl -s https://builder.blender.org/download/daily/ | \
+            grep -oe 'http[^\"]*blender-5\.2[^\"]*linux[^\"]*\.tar\.xz' | \
+            tail -n1)"
+          if [ -z "$BLENDER_URL" ]; then
+            echo "Not found! Download URL may have changed; CI may need update."
+            exit 1
+          fi
+          echo "Found: $BLENDER_URL"
+          echo "blender-url=$BLENDER_URL" >> $GITHUB_OUTPUT
+
+      # Cache Blender install
+      - id: blender_cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/blender
+          key: ${{ steps.blender_version.outputs.blender-url }}
+
+      # Download Blender (if not cached)
+      - name: Download Blender
+        if: ${{ !steps.blender_cache.outputs.cache-hit }}
+        run: |
+          mkdir /opt/blender
+          curl -SL "${{ steps.blender_version.outputs.blender-url }}" | \
+            tar -Jx -C /opt/blender --strip-components=1
+
+      # Symlink blender into PATH
+      - name: Install blender symlink
+        run: |
+          sudo ln -s /opt/blender/blender /usr/local/bin/blender
+          blender --version
+
+      - name: Get release version from tag
+        id: version
+        run: |
+          echo "version=${GITHUB_REF#refs/*/v}" >> $GITHUB_OUTPUT
 
       - name: Build plugin zip (wheels generated at build time)
         run: |
-          ./scripts/build.py build ${{env.VERSION}}
+          ./scripts/build.py build ${{steps.version.outputs.version}}
+
+      - name: Generate extensions index.json
+        run: |
+          blender --command extension server-generate --repo-dir dist
 
       - name: Create GitHub Release and Upload Files
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
-          name: ${{ github.event.repository.name }}-${{ env.VERSION }}
-          files: dist/*.zip
+          name: ${{ github.event.repository.name }}-${{steps.version.outputs.version}}
+          files: dist/*
           generate_release_notes: true
