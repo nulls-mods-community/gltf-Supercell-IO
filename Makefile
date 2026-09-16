@@ -4,4 +4,8 @@ check:
 
 .PHONY: build
 build:
-	./scripts/build.py
+	uv run ./scripts/build.py build
+
+.PHONY: release
+release:
+	uv run ./scripts/build.py release $(version)

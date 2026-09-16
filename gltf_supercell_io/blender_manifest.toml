@@ -1,12 +1,12 @@
 schema_version = "1.0.0"
 
 id = "gltf_supercell_io"
-version = "1.1.0"
+version = "1.1.2"
 name = "glTF Supercell IO"
 tagline = "Supercell glTF importer/exporter extension"
 maintainer = "DaniilSV <daniilsivacenko@gmail.com>"
 type = "add-on"
-website = "https://github.com/Daniil-SV/gltf-Supercell-IO"
+website = "https://github.com/nulls-mods-community/gltf-Supercell-IO"
 
 # Optional list defined by Blender and server, see:
 # https://docs.blender.org/manual/en/dev/advanced/extensions/tags.html

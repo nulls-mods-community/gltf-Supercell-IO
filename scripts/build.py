@@ -8,11 +8,14 @@ Exception: neko_web_api_client is a custom OpenAPI-generated client
 not on PyPI, so its wheel is committed to git.
 """
 
+import hashlib
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tomllib
 import zipfile
 from pathlib import Path
 
@@ -105,7 +108,7 @@ def update_manifest(wheel_files):
     print(f"Updated {MANIFEST_PATH} with {len(wheel_files)} wheels")
 
 
-def build_addon_zip(tag: str = "dev"):
+def build_addon_zip(tag: str = "dev") -> Path:
     """Build the final .zip file for the Blender extension."""
     print(f"\nBuilding extension zip (tag: {tag})...")
 
@@ -134,6 +137,89 @@ def build_addon_zip(tag: str = "dev"):
     print(f"Built: {output_zip}")
     print(f"Size: {output_zip.stat().st_size / 1024:.1f} KB")
     return output_zip
+
+
+def generate_index_json(version: str, zip_path: Path, output_path: Path) -> Path:
+    """Generate index.json with resolved archive_url for Blender extensions.
+
+    The archive_url points to a GitHub release download, so it remains
+    stable across builds. This allows the index.json to be committed to
+    git and used directly by Blender's extension system.
+    """
+    # Parse the manifest using proper TOML parsing
+    with open(MANIFEST_PATH, "rb") as f:
+        manifest = tomllib.load(f)
+
+    # Extract metadata from parsed TOML
+    addon_id = manifest.get("id", "")
+    name = manifest.get("name", "")
+    manifest_version = manifest.get("version", "")
+    tagline = manifest.get("tagline", "")
+    maintainer = manifest.get("maintainer", "")
+    addon_type = manifest.get("type", "add-on")
+    website = manifest.get("website", "")
+    blender_min = manifest.get("blender_version_min", "")
+    license_list = manifest.get("license", [])
+    tags = manifest.get("tags", [])
+    permissions = manifest.get("permissions", {})
+
+    # Compute archive hash
+    archive_size = zip_path.stat().st_size
+    with open(zip_path, "rb") as f:
+        archive_hash = "sha256:" + hashlib.sha256(f.read()).hexdigest()
+
+    # Build GitHub release URL from the website field
+    archive_filename = f"gltf_supercell_io_{version}.zip"
+    if "github.com" in website:
+        # Extract owner/repo from GitHub URL
+        repo_match = re.search(r"github\.com/([^/]+)/([^/]+?)(?:\.git)?/?$", website)
+        if repo_match:
+            owner = repo_match.group(1)
+            repo = repo_match.group(2)
+            archive_url = f"https://github.com/{owner}/{repo}/releases/download/v{version}/{archive_filename}"
+        else:
+            print(
+                f"WARNING: Could not parse GitHub URL from {website}, using local path",
+                file=sys.stderr,
+            )
+            archive_url = f"./{archive_filename}"
+    else:
+        archive_url = f"./{archive_filename}"
+
+    index_data = {
+        "version": "v1",
+        "blocklist": [],
+        "data": [
+            {
+                "schema_version": "1.0.0",
+                "id": addon_id,
+                "name": name,
+                "tagline": tagline,
+                "version": manifest_version,
+                "type": addon_type,
+                "maintainer": maintainer,
+                "license": license_list,
+                "blender_version_min": blender_min,
+                "website": website,
+                "permissions": permissions,
+                "tags": tags,
+                "python_versions": ["3"],
+                "archive_url": archive_url,
+                "archive_size": archive_size,
+                "archive_hash": archive_hash,
+            }
+        ],
+    }
+
+    with open(output_path, "w") as f:
+        json.dump(index_data, f, indent=2)
+        f.write("\n")
+
+    print(f"Generated: {output_path}")
+    print(f"  archive_url: {archive_url}")
+    print(f"  archive_size: {archive_size}")
+    print(f"  archive_hash: {archive_hash}")
+    return output_path
 
 
 def install_into_venv():
@@ -218,9 +304,34 @@ def install_into_venv():
     print("✅ Wheels installed into venv for type checking.")
 
 
+def release_build(version: str):
+    """Build a release version with stable index.json."""
+    print("\n=== Release Build ===")
+
+    # Step 1: Download wheels (generated, never committed except neko)
+    wheels = download_wheels()
+
+    if not wheels:
+        print("No wheels found! Check requirements-wheels.txt.", file=sys.stderr)
+        sys.exit(1)
+
+    # Step 2: Update manifest with actual wheel filenames
+    update_manifest(wheels)
+
+    zip_path = build_addon_zip(version)  # tag = version for release
+
+    # Step 4: Generate index.json with resolved archive_url (output to repo root)
+    index_path = REPO_ROOT / "index.json"
+    generate_index_json(version, zip_path, index_path)
+
+    print("\n✅ Release build complete!")
+    print(f"  Zip: {zip_path}")
+    print(f"  Index: {index_path}")
+
+
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "build"
-    tag = sys.argv[2] if len(sys.argv) > 2 else "dev"
+    version = sys.argv[2] if len(sys.argv) > 2 else "dev"
 
     if mode == "install":
         install_into_venv()
@@ -236,9 +347,11 @@ if __name__ == "__main__":
         update_manifest(wheels)
 
         # Step 3: Build the zip
-        zip_path = build_addon_zip(tag)
+        zip_path = build_addon_zip(version)
 
         print(f"\n✅ Build complete: {zip_path}")
+    elif mode == "release" and version != "dev":
+        release_build(version)
     else:
-        print(f"Unknown mode: {mode}. Use 'build' or 'install'.")
+        print(f"Unknown mode: {mode}. Use 'build', 'release', or 'install'.")
         sys.exit(1)

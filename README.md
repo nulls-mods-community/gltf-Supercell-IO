@@ -6,7 +6,7 @@
 
 [![Blender 5.2+](https://img.shields.io/badge/Blender-5.2%2B-orange.svg?logo=blender)](https://www.blender.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub release](https://img.shields.io/github/v/release/Daniil-SV/gltf-Supercell-IO?color=brightgreen)](https://github.com/Daniil-SV/gltf-Supercell-IO/releases)
+[![GitHub release](https://img.shields.io/github/v/release/nulls-mods-community/gltf-Supercell-IO?color=brightgreen)](https://github.com/nulls-mods-community/gltf-Supercell-IO/releases)
 
 ---
 
@@ -60,11 +60,20 @@ Instead of relying on external command-line tools or multi-step converters, this
 
 ## Installation
 
-1. Go to the **[Releases](https://github.com/Daniil-SV/gltf-Supercell-IO/releases)** section and download the latest `.zip` package.
+### Installing extensions repository
+1. Go to the **[Releases](https://github.com/nulls-mods-community/gltf-Supercell-IO/releases/latest)** section and download the latest `.zip` package.
 2. Launch **Blender 5.2+**.
 3. Navigate to **Edit** ➔ **Preferences** (or press `Ctrl` + `,`).
 4. Select the **Add-ons** / **Get Extensions** tab.
-5. Click the top-right menu icon (⚙️ or dropdown arrow) and select **Install from Disk...**.
+5. Click the Repositories and with a link to a `index.json` file: `https://raw.githubusercontent.com/nulls-mods-community/gltf-Supercell-IO/refs/heads/main/index.json`
+
+### Installing zip manually
+
+1. Go to the **[Releases](https://github.com/nulls-mods-community/gltf-Supercell-IO/releases/latest)** section and download the latest `.zip` package.
+2. Launch **Blender 5.2+**.
+3. Navigate to **Edit** ➔ **Preferences** (or press `Ctrl` + `,`).
+4. Select the **Add-ons** / **Get Extensions** tab.
+5. Click the top-right menu icon (⚙️or dropdown arrow) and select **Install from Disk...**.
 6. Choose the downloaded `.zip` file and activate the plugin.
 
 ---

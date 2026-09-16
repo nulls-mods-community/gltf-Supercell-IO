@@ -15,47 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-
-      # Find latest Blender build
-      - name: Find latest Blender build
-        id: blender_version
-        run: |
-          echo "Looking for Blender 5.2"
-          BLENDER_URL="$(curl -s https://builder.blender.org/download/daily/ | \
-            grep -oe 'http[^\"]*blender-5\.2[^\"]*linux[^\"]*\.tar\.xz' | \
-            tail -n1)"
-          if [ -z "$BLENDER_URL" ]; then
-            echo "Not found! Download URL may have changed; CI may need update."
-            exit 1
-          fi
-          echo "Found: $BLENDER_URL"
-          echo "blender-url=$BLENDER_URL" >> $GITHUB_OUTPUT
-
-      # Cache Blender install
-      - id: blender_cache
-        uses: actions/cache@v4
-        with:
-          path: /opt/blender
-          key: ${{ steps.blender_version.outputs.blender-url }}
-
-      # Download Blender (if not cached)
-      - name: Download Blender
-        if: ${{ !steps.blender_cache.outputs.cache-hit }}
-        run: |
-          mkdir /opt/blender
-          curl -SL "${{ steps.blender_version.outputs.blender-url }}" | \
-            tar -Jx -C /opt/blender --strip-components=1
-
-      # Symlink blender into PATH
-      - name: Install blender symlink
-        run: |
-          sudo ln -s /opt/blender/blender /usr/local/bin/blender
-          blender --version
 
       - name: Get release version from tag
         id: version
@@ -64,11 +30,15 @@ jobs:
 
       - name: Build plugin zip (wheels generated at build time)
         run: |
-          ./scripts/build.py build ${{steps.version.outputs.version}}
+          ./scripts/build.py release ${{steps.version.outputs.version}}
 
-      - name: Generate extensions index.json
+      - name: Commit and push index.json
         run: |
-          blender --command extension server-generate --repo-dir dist
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add index.json
+          git diff --staged --quiet || git commit -m "Update index.json for ${{ steps.version.outputs.version }}"
+          git push origin HEAD:main
 
       - name: Create GitHub Release and Upload Files
         uses: softprops/action-gh-release@v2
